@@ -23,4 +23,8 @@ public class User {
     private String userPassword;
     private LocalDate userBirthday;
 
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "role_id")
+    private Role role;
 }
