@@ -20,7 +20,11 @@ public class User {
 
     private String userEmail;
     private String userName;
+
+    @Column(name = "user_pwd")
     private String userPassword;
+
+    @Column(name = "user_birthday")
     private LocalDate userBirthday;
 
 
