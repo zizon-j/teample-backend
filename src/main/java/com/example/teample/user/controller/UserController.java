@@ -2,6 +2,8 @@ package com.example.teample.user.controller;
 
 
 import com.example.teample.user.domain.User;
+import com.example.teample.user.dto.UserRequestDto;
+import com.example.teample.user.dto.UserResponseDto;
 import com.example.teample.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -15,12 +17,12 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    public User createUser(@RequestBody User user) { //사용자 요청을 받은 후 DB에 저장하고 저장된 User반환
-        return userService.create(user);
+    public UserResponseDto createUser(@RequestBody UserRequestDto requestDto) { //사용자 요청을 받은 후 DB에 저장하고 저장된 User반환
+            return userService.create(requestDto);
     }
 
     @GetMapping
-    public List<User> getUsers() { //모든 사용자 목록 조회해서 JSON으로 반환
+        public List<User> getUsers() { //모든 사용자 목록 조회해서 JSON으로 반환
         return userService.findAll();
     }
 

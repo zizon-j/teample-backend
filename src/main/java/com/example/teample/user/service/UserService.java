@@ -1,7 +1,11 @@
 package com.example.teample.user.service;
 
 import com.example.teample.user.domain.User;
+import com.example.teample.user.dto.UserRequestDto;
+import com.example.teample.user.dto.UserResponseDto;
+import com.example.teample.user.repository.RoleRepository;
 import com.example.teample.user.repository.UserRepository;
+import com.example.teample.user.domain.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -11,9 +15,23 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
 
-    public User create(User user) {
-        return userRepository.save(user);
+    public UserResponseDto create(UserRequestDto requestDto) {
+        Role role = roleRepository.findById(requestDto.getRoleId())
+                .orElseThrow(() -> new IllegalArgumentException("역할 없음"));
+
+
+        User user = User.builder()
+                .userEmail(requestDto.getUserEmail())
+                .userName(requestDto.getUserName())
+                .userPassword(requestDto.getUserPwd())
+                .userBirthday(requestDto.getUserBirthday())
+                .role(role)
+                .build();
+
+        User savedUser = userRepository.save(user);
+        return UserResponseDto.from(savedUser);
     }
 
     public List<User> findAll() {
