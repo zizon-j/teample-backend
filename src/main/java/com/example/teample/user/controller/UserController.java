@@ -6,6 +6,7 @@ import com.example.teample.user.dto.UserRequestDto;
 import com.example.teample.user.dto.UserResponseDto;
 import com.example.teample.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,17 +23,23 @@ public class UserController {
     }
 
     @GetMapping
-        public List<User> getUsers() { //모든 사용자 목록 조회해서 JSON으로 반환
+        public List<UserResponseDto> getUsers() { //모든 사용자 목록 조회해서 JSON으로 반환
         return userService.findAll();
     }
 
     @GetMapping("/{id}")
-    public User getUser(@PathVariable long id) { //특정 ID를 가진 사용자 조회
+    public UserResponseDto getUser(@PathVariable long id) { //특정 ID를 가진 사용자 조회
         return userService.findById(id);
     }
 
+    @PutMapping("/{id}")
+    public UserResponseDto updateUser(@PathVariable long id, @RequestBody UserRequestDto requestDto) {
+        return userService.update(id, requestDto);
+    }
+
     @DeleteMapping("/{id}")
-    public void deleteUser(@PathVariable long id) { //특정 사용자 삭제
+    public ResponseEntity<String> deleteUser(@PathVariable long id) { //특정 사용자 삭제
         userService.delete(id);
+        return ResponseEntity.ok("삭제 완료");
     }
 }

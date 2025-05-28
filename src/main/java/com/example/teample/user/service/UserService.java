@@ -7,15 +7,19 @@ import com.example.teample.user.repository.RoleRepository;
 import com.example.teample.user.repository.UserRepository;
 import com.example.teample.user.domain.Role;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public UserResponseDto create(UserRequestDto requestDto) {
         Role role = roleRepository.findById(requestDto.getRoleId())
@@ -25,7 +29,7 @@ public class UserService {
         User user = User.builder()
                 .userEmail(requestDto.getUserEmail())
                 .userName(requestDto.getUserName())
-                .userPassword(requestDto.getUserPwd())
+                .userPassword(passwordEncoder.encode(requestDto.getUserPwd()))
                 .userBirthday(requestDto.getUserBirthday())
                 .role(role)
                 .build();
@@ -34,13 +38,35 @@ public class UserService {
         return UserResponseDto.from(savedUser);
     }
 
-    public List<User> findAll() {
-        return userRepository.findAll();
+    public List<UserResponseDto> findAll() {
+        return userRepository.findAll().stream()
+                .map(UserResponseDto::from) //각 User 객체를 UserResponseDto로 변환함
+                .collect(Collectors.toList()); //DTO로 변환된 요소들을 리스트로 다시 모아서 반환함
     }
 
-    public User findById(Long id) {
-        return userRepository.findById(id)
+    public UserResponseDto findById(Long id) {
+        return UserResponseDto.from(
+                userRepository.findById(id)
+                        .orElseThrow(() -> new IllegalArgumentException("유저 없음"))
+        );
+    }
+
+    @Transactional
+    public UserResponseDto update(Long id, UserRequestDto requestDto) {
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
+
+        user.setUserEmail(requestDto.getUserEmail());
+        user.setUserName(requestDto.getUserName());
+        user.setUserPassword(requestDto.getUserPwd());
+        user.setUserBirthday(requestDto.getUserBirthday());
+
+        //필요 시 Role도 업데이트
+        Role role = roleRepository.findById(requestDto.getRoleId())
+                .orElseThrow(() -> new IllegalArgumentException("역할 없음"));
+        user.setRole(role);
+
+        return UserResponseDto.from(user); // 저장은 @Transactional에 의해 자동 적용됨
     }
 
     public void delete(Long id) {
