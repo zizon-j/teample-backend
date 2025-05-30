@@ -7,24 +7,38 @@ import com.example.teample.user.repository.RoleRepository;
 import com.example.teample.user.repository.UserRepository;
 import com.example.teample.user.domain.Role;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.swing.text.html.Option;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
 
+    public User getByEmail(String email) {
+        Optional<User> user = userRepository.findByUserEmail(email);
+
+        if(user.isEmpty())
+            throw new NullPointerException("email is empty");
+
+        return user.get();
+    }
+
     public UserResponseDto create(UserRequestDto requestDto) {
         Role role = roleRepository.findById(requestDto.getRoleId())
                 .orElseThrow(() -> new IllegalArgumentException("역할 없음"));
 
+        log.info("user pw : {}, user encode pwd {}", requestDto.getUserPwd(), passwordEncoder.encode(requestDto.getUserPwd()));
 
         User user = User.builder()
                 .userEmail(requestDto.getUserEmail())
