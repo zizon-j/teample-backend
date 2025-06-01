@@ -37,7 +37,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/users/**").permitAll()
                         .requestMatchers("/api/auth/login").permitAll()
                         // 그 외의 모든 요청은 인증 필요
-                        .anyRequest().authenticated()
+                        .anyRequest().authenticated() // 나중에 지워야한다면 지워도 됨
                 ).sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                 );
