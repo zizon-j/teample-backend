@@ -1,17 +1,18 @@
-package com.example.teample.user.dto;
+    package com.example.teample.user.dto;
 
-import lombok.Getter;
-import lombok.Setter;
 
-import java.time.LocalDate;
+    import com.fasterxml.jackson.annotation.JsonFormat;
+    import lombok.Getter;
+    import lombok.Setter;
 
-@Getter
-@Setter
+    import java.time.LocalDate;
 
-public class UserRequestDto {
-    private String userEmail;
-    private String userName;
-    private String userPwd;
-    private LocalDate userBirthday;
-    private Long roleId;
-}
+    @Getter
+    @Setter
+    public class UserRequestDto {
+        private String userEmail;
+        private String userName;
+        private String userPwd;
+        private LocalDate userBirthday;
+        private Long roleId;
+    }
